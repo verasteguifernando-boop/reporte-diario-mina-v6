@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#173a5d">
+<title>Gestión de Construcción v6</title>
+<style>
+:root{--navy:#163a5d;--blue:#2d6f9f;--bg:#f3f6f8;--card:#fff;--line:#d9e1e8;--text:#1f2d38;--muted:#6b7785;--green:#16845b;--amber:#b86a00;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--text)}
+header{position:sticky;top:0;z-index:50;background:linear-gradient(135deg,var(--navy),var(--blue));color:white}
+.head{max-width:1280px;margin:auto;padding:12px 14px;display:flex;justify-content:space-between;gap:12px;align-items:center}
+h1{margin:0;font-size:19px}.sub{font-size:11px;opacity:.88;margin-top:3px}.userbox{text-align:right;font-size:11px}
+main{max-width:1280px;margin:auto;padding:13px}
+.card{background:white;border:1px solid var(--line);border-radius:14px;padding:14px;margin-bottom:13px}
+h2{font-size:16px;color:var(--navy);margin:0 0 11px}h3{font-size:13px;margin:0 0 6px}
+label{display:block;font-size:11px;font-weight:700;color:#44515d;margin-bottom:4px}
+input,select,textarea{width:100%;border:1px solid #cbd5de;border-radius:8px;padding:8px 9px;font:inherit;background:white}
+button{border:0;border-radius:9px;padding:9px 12px;font-weight:700;cursor:pointer}
+.primary{background:var(--navy);color:white}.secondary{background:#e8eef3;color:#243441}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px;text-align:center}.kpi b{font-size:20px;color:var(--navy);display:block}.kpi span{font-size:10px;color:var(--muted)}
+.modules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.module{background:white;border:1px solid var(--line);border-radius:12px;padding:13px;cursor:pointer}.module .icon{font-size:22px}.module p{font-size:11px;color:var(--muted);margin:5px 0 0}
+.badge{display:inline-block;border-radius:999px;padding:4px 8px;font-size:10px;font-weight:700;background:#eaf3f9;color:var(--navy)}
+.nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}.nav button.active{background:var(--navy);color:#fff}
+.hidden{display:none!important}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.table{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:700px}th,td{padding:7px;border-bottom:1px solid var(--line);font-size:11px;text-align:left}th{background:#edf4f8;color:var(--navy)}
+.login{max-width:430px;margin:48px auto}.muted{font-size:10px;color:var(--muted)}.section{display:none}.section.active{display:block}
+.bar{height:10px;border-radius:999px;background:#e7edf2;overflow:hidden}.bar>span{height:100%;display:block;background:#6d8fa8}
+@media(max-width:900px){.grid3,.grid4{grid-template-columns:1fr}.kpis{grid-template-columns:repeat(2,1fr)}.modules{grid-template-columns:1fr}.head{align-items:flex-start;flex-direction:column}.userbox{text-align:left}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./config.js"></script>
+</head>
+<body>
+<header><div class="head"><div><h1>Gestión de Construcción v6</h1><div class="sub">Producción · Seguridad · Calidad · Procura · Restricciones · Gestión</div></div><div id="userBox" class="userbox hidden"></div></div></header>
+<main>
+<section id="loginSection" class="section active"><div class="card login"><h2>Ingresar</h2><div><label>Correo</label><input id="email" type="email"></div><div style="margin-top:9px"><label>Contraseña</label><input id="password" type="password"></div><div class="actions"><button class="primary" onclick="login()">Ingresar</button></div><div id="loginMsg" class="muted" style="margin-top:8px"></div></div></section>
+<section id="appSection" class="section">
+  <div class="nav">
+    <button id="navHome" class="active" onclick="showPage('home')">Inicio</button>
+    <button id="navPlan" onclick="showPage('plan')">Plan Diario</button>
+    <button id="navReports" onclick="showPage('reports')">Reportes</button>
+    <button id="navActions" onclick="showPage('actions')">Acciones</button>
+    <button id="navTeam" onclick="showPage('team')">Equipo</button>
+    <button id="navAdmin" onclick="showPage('admin')">Configuración</button>
+    <button onclick="logout()">Salir</button>
+  </div>
+  <div id="pageHome" class="page"></div><div id="pagePlan" class="page hidden"></div><div id="pageReports" class="page hidden"></div><div id="pageActions" class="page hidden"></div><div id="pageTeam" class="page hidden"></div><div id="pageAdmin" class="page hidden"></div>
+</section>
+</main>
+<script src="./app.js"></script>
+</body>
+</html>
