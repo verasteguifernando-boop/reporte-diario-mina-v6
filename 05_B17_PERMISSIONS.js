@@ -507,7 +507,25 @@
     500
   );
 
+// ==========================================================
+// 16. RECARGAR PERMISOS AL ABRIR/CAMBIAR PROYECTO
+// ==========================================================
 
+if (typeof window.b15OpenProject === "function") {
+
+  const b17OriginalOpenProject =
+    window.b15OpenProject;
+
+  window.b15OpenProject =
+    async function(projectId) {
+
+      await b17OriginalOpenProject(projectId);
+
+      await b17RefreshPermissions();
+
+    };
+
+}
   console.log(
     "[B17] Motor de permisos cargado."
   );
