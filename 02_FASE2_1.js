@@ -253,7 +253,16 @@ renderAdmin=async function(){
     <label style="margin-top:7px">Rol</label><select id="invRole">${roleOptions(ctx.role)}</select>
     <label style="margin-top:7px">Disciplina</label><select id="invDisc">${disciplineOptions()}</select>
     <label style="margin-top:7px">Reporta a</label><select id="invBoss"><option value="">—</option>${members.map(x=>`<option value="${x.id}">${esc(x.display_name)} · ${esc(roleName(x.role))}</option>`).join('')}</select>
-    <div class="actions"><button class="primary" onclick="sendInvite()">Crear invitación</button></div><div id="invMsg" class="muted"></div>
+    <div class="actions">
+  <button
+    class="primary"
+    data-permission="organization.manage"
+    onclick="sendInvite()"
+  >
+    Crear invitación
+  </button>
+</div>
+<div id="invMsg" class="muted"></div>
    </div>
   </div>`;
 };
