@@ -184,7 +184,34 @@
 
   }
 
+// ==========================================================
+// 5.1 REAPLICAR PERMISOS DESPUÉS DE RENDERIZAR PÁGINAS
+// ==========================================================
 
+if (
+  typeof showPage === "function"
+) {
+
+  const b18OldShowPage =
+    showPage;
+
+  showPage =
+  async function(name) {
+
+    await b18OldShowPage(name);
+
+    if (
+      typeof window.b17ApplySecurityUI ===
+      "function"
+    ) {
+
+      window.b17ApplySecurityUI();
+
+    }
+
+  };
+
+}
   // ==========================================================
   // 6. FUNCIÓN DE DIAGNÓSTICO
   // ==========================================================
