@@ -524,3 +524,23 @@ startApp = async function() {
 
   `;
 };
+// ============================================================
+// INICIALIZACIÓN SaaS
+// Se ejecuta aquí para garantizar que B15 ya reemplazó startApp.
+// ============================================================
+
+(async function b15Init() {
+
+  const { data } =
+    await sb.auth.getSession();
+
+  if (data.session) {
+
+    sessionUser =
+      data.session.user;
+
+    await startApp();
+
+  }
+
+})();
