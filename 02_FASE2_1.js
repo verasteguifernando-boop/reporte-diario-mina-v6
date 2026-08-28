@@ -108,7 +108,7 @@ productionModule=async function(){
     <div class="muted">Puedes seleccionar varias fotos desde cámara o galería.</div>
    </div>
 
-   <div class="actions"><button class="primary" onclick="saveProduction()">Guardar ejecución</button></div>
+   <div class="actions"><button class="primary" data-permission="construction.execute" onclick="saveProduction()">Guardar ejecución</button></div>
    <div id="prodMsg" class="muted"></div>
   </div>
 
@@ -197,7 +197,7 @@ renderPlan=async function(){
     <div><label>Und.</label><input id="dpUnit"></div>
     <div><label>Meta del día</label><input id="dpQty" type="number" step=".001"></div>
    </div>
-   <div class="actions"><button class="primary" onclick="f21SavePlan()">Asignar al Plan del Día</button></div>
+   <div class="actions"><button class="primary" data-permission="planning.create" onclick="f21SavePlan()">Asignar al Plan del Día</button></div>
    <div id="dpMsg" class="muted"></div>
   </div>`;
 };
@@ -239,13 +239,13 @@ renderAdmin=async function(){
   <div class="grid3">
    <div class="card"><h2>Agregar disciplina</h2>
     <label>Código</label><input id="cfgDCode"><label style="margin-top:7px">Nombre</label><input id="cfgDName">
-    <div class="actions"><button class="primary" onclick="f21AddDisc()">Agregar</button></div>
+    <div class="actions"><button class="primary" data-permission="administration.manage" onclick="f21AddDisc()">Agregar</button></div>
    </div>
    <div class="card"><h2>Agregar frente</h2>
     <label>Disciplina</label><select id="cfgFDisc">${disciplineOptions()}</select>
     <label style="margin-top:7px">Código</label><input id="cfgFCode">
     <label style="margin-top:7px">Nombre</label><input id="cfgFName">
-    <div class="actions"><button class="primary" onclick="f21AddFront()">Agregar</button></div>
+    <div class="actions"><button class="primary" data-permission="administration.manage" onclick="f21AddFront()">Agregar</button></div>
    </div>
    <div class="card"><h2>Invitar miembro</h2>
     <label>Nombre</label><input id="invName">
