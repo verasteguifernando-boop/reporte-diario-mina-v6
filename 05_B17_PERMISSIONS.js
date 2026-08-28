@@ -56,17 +56,17 @@
 
     // B15 guarda el proyecto seleccionado.
     if (
-      window.b155CurrentProject &&
-      window.b155CurrentProject.project_id
+      window.b15SelectedProject &&
+      window.b15SelectedProject.project_id
     ) {
-      return window.b155CurrentProject.project_id;
+      return window.b15SelectedProject.project_id;
     }
 
     if (
-      window.b155CurrentProject &&
-      window.b155CurrentProject.id
+      window.b15SelectedProject &&
+      window.b15SelectedProject.id
     ) {
-      return window.b155CurrentProject.id;
+      return window.b15SelectedProject.id;
     }
 
     // Compatibilidad con posibles variables anteriores.
