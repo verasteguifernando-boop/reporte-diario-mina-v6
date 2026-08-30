@@ -177,16 +177,34 @@ saveProduction=async function(){
 // ---------- Plan Diario: creación desde nivel superior ----------
 const f21OldRenderPlan=renderPlan;
 renderPlan=async function(){
-  if(!f21CanPlan())return f21OldRenderPlan();
+  const canCreatePlan = window.b17Can?.('planning.create') === true;
+  const canAssignTeam = window.b17Can?.('planning.team.assign') === true;
+
+  if(!canCreatePlan && !canAssignTeam){
+    return f21OldRenderPlan();
+  }
+
   await f21RefreshCatalogs();
+
   const [p,m]=await Promise.all([
-    sb.from('core_v_plan_vs_actual').select('*').eq('project_id',ctx.project_id).eq('plan_date',today()).order('item'),
-    sb.from('core_project_members').select('id,display_name,role,discipline_id').eq('project_id',ctx.project_id).eq('is_active',true)
+    sb.from('core_v_plan_vs_actual')
+      .select('*')
+      .eq('project_id',ctx.project_id)
+      .eq('plan_date',today())
+      .order('item'),
+
+    sb.from('core_project_members')
+      .select('id,display_name,role,discipline_id,reports_to_member_id')
+      .eq('project_id',ctx.project_id)
+      .eq('is_active',true)
   ]);
-  const plans=p.data||[],members=m.data||[];
-  $('pagePlan').innerHTML=`
-  <div class="card"><h2>Plan Diario · ${today()}</h2>${renderPlanTable(plans)}</div>
-  <div class="card"><h2>Asignar actividad</h2>
+
+  const plans=p.data||[];
+  const members=m.data||[];
+
+  const formalPlanCard = canCreatePlan ? `
+  <div class="card">
+   <h2>Asignar actividad al Plan Diario</h2>
    <div class="grid4">
     <div><label>Disciplina</label><select id="dpDisc" onchange="f21PlanDisc()">${disciplineOptions()}</select></div>
     <div><label>Frente</label><select id="dpFront">${frontOptions()}</select></div>
@@ -197,11 +215,33 @@ renderPlan=async function(){
     <div><label>Und.</label><input id="dpUnit"></div>
     <div><label>Meta del día</label><input id="dpQty" type="number" step=".001"></div>
    </div>
-   <div class="actions"><button class="primary" data-permission="planning.create" onclick="f21SavePlan()">Asignar al Plan del Día</button></div>
+   <div class="actions">
+    <button class="primary" data-permission="planning.create" onclick="f21SavePlan()">Asignar al Plan del Día</button>
+   </div>
    <div id="dpMsg" class="muted"></div>
-  </div>`;
+  </div>` : '';
+
+  const operationalCard = canAssignTeam ? `
+  <div class="card">
+    <h2>Asignación operativa</h2>
+    <p class="muted">
+      Distribución de trabajo al equipo durante el turno.
+    </p>
+    <div class="muted">
+      B18.3 · Formulario de asignación operativa en preparación.
+    </div>
+  </div>` : '';
+
+  $('pagePlan').innerHTML=`
+    <div class="card">
+      <h2>Plan Diario · ${today()}</h2>
+      ${renderPlanTable(plans)}
+    </div>
+
+    ${formalPlanCard}
+    ${operationalCard}
+  `;
 };
-function f21PlanDisc(){
   const d=$('dpDisc').value;
   $('dpFront').innerHTML=frontOptions('',d);
   [...$('dpMember').options].forEach((o,i)=>{if(i)o.hidden=!!d&&!!o.dataset.disc&&o.dataset.disc!==d});
