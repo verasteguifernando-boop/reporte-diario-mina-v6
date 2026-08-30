@@ -221,15 +221,130 @@ renderPlan=async function(){
    <div id="dpMsg" class="muted"></div>
   </div>` : '';
 
-  const operationalCard = canAssignTeam ? `
+  const operationalMembers = ctx.role === 'supervisor'
+  ? members.filter(x => String(x.reports_to_member_id||'') === String(ctx.member_id))
+  : members.filter(x => String(x.id) !== String(ctx.member_id));
+
+const operationalCard = canAssignTeam ? `
   <div class="card">
     <h2>Asignación operativa</h2>
     <p class="muted">
-      Distribución de trabajo al equipo durante el turno.
+      Distribuye trabajo al equipo durante el turno sin modificar el Plan Diario formal.
     </p>
-    <div class="muted">
-      B18.3 · Formulario de asignación operativa en preparación.
+
+    <div class="grid4">
+
+      <div>
+        <label>Origen</label>
+        <select id="opOrigin" onchange="f21OperationalOrigin()">
+          <option value="planned">Programada para hoy</option>
+          <option value="pulled_forward">Actividad adelantada</option>
+          <option value="carryover">Arrastre / recuperación</option>
+          ${
+            window.b17Can?.('planning.unplanned.create')
+              ? `
+                <option value="unplanned">No planificada</option>
+                <option value="change">Posible cambio / adicional</option>
+              `
+              : ''
+          }
+        </select>
+      </div>
+
+      <div style="grid-column:span 2">
+        <label>Actividad del Plan</label>
+        <select id="opPlan" onchange="f21OperationalApplyPlan()">
+          <option value="">Seleccionar actividad</option>
+          ${
+            plans.map(x=>`
+              <option value="${x.daily_plan_id}">
+                ${esc(x.element)} · ${esc(x.item)} · ${fmt(x.planned_qty,3)} ${esc(x.unit)}
+              </option>
+            `).join('')
+          }
+        </select>
+      </div>
+
+      <div>
+        <label>Responsable</label>
+        <select id="opMember">
+          <option value="">Seleccionar</option>
+          ${
+            operationalMembers.map(x=>`
+              <option
+                value="${x.id}"
+                data-disc="${x.discipline_id||''}"
+              >
+                ${esc(x.display_name)} · ${esc(roleName(x.role))}
+              </option>
+            `).join('')
+          }
+        </select>
+      </div>
+
+      <div>
+        <label>Turno</label>
+        <select id="opShift">
+          <option>Día</option>
+          <option>Noche</option>
+        </select>
+      </div>
+
+      <div>
+        <label>Disciplina</label>
+        <select id="opDisc" onchange="f21OperationalDisc()">
+          ${disciplineOptions()}
+        </select>
+      </div>
+
+      <div>
+        <label>Frente</label>
+        <select id="opFront">
+          ${frontOptions()}
+        </select>
+      </div>
+
+      <div>
+        <label>Elemento</label>
+        <input id="opElement">
+      </div>
+
+      <div>
+        <label>Partida</label>
+        <input id="opItem">
+      </div>
+
+      <div>
+        <label>Und.</label>
+        <input id="opUnit">
+      </div>
+
+      <div>
+        <label>Cantidad asignada</label>
+        <input id="opQty" type="number" step=".001">
+      </div>
+
+      <div style="grid-column:span 2">
+        <label>Observación</label>
+        <input
+          id="opNotes"
+          placeholder="Instrucción, condición o comentario de la asignación"
+        >
+      </div>
+
     </div>
+
+    <div class="actions">
+      <button
+        class="primary"
+        data-permission="planning.team.assign"
+        onclick="f21SaveOperationalAssignment()"
+      >
+        Asignar trabajo
+      </button>
+    </div>
+
+    <div id="opMsg" class="muted"></div>
   </div>` : '';
 
   $('pagePlan').innerHTML=`
