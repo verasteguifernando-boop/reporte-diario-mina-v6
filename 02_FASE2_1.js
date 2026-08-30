@@ -186,21 +186,28 @@ renderPlan=async function(){
 
   await f21RefreshCatalogs();
 
-  const [p,m]=await Promise.all([
-    sb.from('core_v_plan_vs_actual')
-      .select('*')
-      .eq('project_id',ctx.project_id)
-      .eq('plan_date',today())
-      .order('item'),
+ const [p,m,peopleResult]=await Promise.all([
+  sb.from('core_v_plan_vs_actual')
+    .select('*')
+    .eq('project_id',ctx.project_id)
+    .eq('plan_date',today())
+    .order('item'),
 
-    sb.from('core_project_members')
-      .select('id,display_name,role,discipline_id,reports_to_member_id')
-      .eq('project_id',ctx.project_id)
-      .eq('is_active',true)
-  ]);
+  sb.from('core_project_members')
+    .select('id,display_name,role,discipline_id,reports_to_member_id')
+    .eq('project_id',ctx.project_id)
+    .eq('is_active',true),
 
-  const plans=p.data||[];
-  const members=m.data||[];
+  sb.from('core_project_people')
+    .select('id,display_name,job_title,discipline_id,reports_to_person_id,user_id')
+    .eq('project_id',ctx.project_id)
+    .eq('is_active',true)
+    .order('display_name')
+]);
+
+const plans=p.data||[];
+const members=m.data||[];
+const people=peopleResult.data||[];
 
   const formalPlanCard = canCreatePlan ? `
   <div class="card">
@@ -221,9 +228,21 @@ renderPlan=async function(){
    <div id="dpMsg" class="muted"></div>
   </div>` : '';
 
-  const operationalMembers = ctx.role === 'supervisor'
-  ? members.filter(x => String(x.reports_to_member_id||'') === String(ctx.member_id))
-  : members.filter(x => String(x.id) !== String(ctx.member_id));
+  const currentPerson = people.find(
+  x => String(x.user_id||'') === String(sessionUser?.id||'')
+);
+
+const operationalPeople = ctx.role === 'supervisor'
+  ? people.filter(
+      x =>
+        String(x.reports_to_person_id||'') === String(currentPerson?.id||'')
+        && x.is_active !== false
+    )
+  : people.filter(
+      x =>
+        String(x.id) !== String(currentPerson?.id||'')
+        && x.is_active !== false
+    );
 
 const operationalCard = canAssignTeam ? `
   <div class="card">
@@ -270,12 +289,12 @@ const operationalCard = canAssignTeam ? `
         <select id="opMember">
           <option value="">Seleccionar</option>
           ${
-            operationalMembers.map(x=>`
+            operationalPeople.map(x=>`
               <option
                 value="${x.id}"
                 data-disc="${x.discipline_id||''}"
               >
-                ${esc(x.display_name)} · ${esc(roleName(x.role))}
+                ${esc(x.display_name)} · ${esc(x.job_title||'Sin cargo')}
               </option>
             `).join('')
           }
