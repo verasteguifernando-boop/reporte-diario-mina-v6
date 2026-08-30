@@ -242,6 +242,7 @@ renderPlan=async function(){
     ${operationalCard}
   `;
 };
+function f21PlanDisc(){
   const d=$('dpDisc').value;
   $('dpFront').innerHTML=frontOptions('',d);
   [...$('dpMember').options].forEach((o,i)=>{if(i)o.hidden=!!d&&!!o.dataset.disc&&o.dataset.disc!==d});
